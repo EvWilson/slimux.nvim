@@ -1,9 +1,15 @@
 local M = {}
 
+M.__target_socket = ''
 M.__target_pane = ''
 
 function M.setup(config)
+	M.__target_socket = config.target_socket
 	M.__target_pane = config.target_pane
+end
+
+function M.configure_target_socket(name)
+	M.__target_socket = name
 end
 
 function M.configure_target_pane(name)
@@ -38,13 +44,24 @@ function M.__capture_paragraph_text()
 		end
 		end_line = end_line + 1
 	end
-	local paragraph_lines = vim.api.nvim_buf_get_lines(current_buffer, start_line - 1, end_line, false)
+	local paragraph_lines = vim.api.nvim_buf_get_lines(current_buffer, start_line, end_line, false)
 	local paragraph_text = table.concat(paragraph_lines, '\n')
 	return paragraph_text
 end
 
 function M.__send(text)
-	local cmd = string.format('tmux send-keys -t %s "%s" Enter', M.__target_pane, text)
+	local escaped = string.gsub(text, ';\n', '\\;\n')
+	vim.print(string.sub(escaped, -1))
+	if string.sub(escaped, -1) == ';' then
+		escaped = string.sub(escaped, 1, -2) .. '\\;'
+	end
+	local flag
+	if string.sub(M.__target_socket, 1, 1) == '/' then
+		flag = 'S'
+	else
+		flag = 'L'
+	end
+	local cmd = string.format('tmux -%s %s send-keys -t %s "%s" Enter', flag, M.__target_socket, M.__target_pane, escaped)
 	vim.fn.systemlist(cmd)
 end
 
