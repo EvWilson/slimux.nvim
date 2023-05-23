@@ -76,7 +76,6 @@ function M.__send(text)
 		flag = 'L'
 	end
 	local cmd = string.format('tmux -%s %s send-keys -t %s -- "%s" Enter', flag, M.__target_socket, M.__target_pane, text)
-	vim.print('cmd:', cmd)
 	vim.fn.systemlist(cmd)
 end
 
