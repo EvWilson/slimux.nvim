@@ -15,7 +15,7 @@ function M.get_tmux_socket()
 end
 
 function M.get_tmux_window()
-	return vim.fn.systemlist("tmux display-message -p '#I'")
+	return vim.fn.systemlist("tmux display-message -p '#I'")[1]
 end
 
 function M.configure_target_socket(name)
