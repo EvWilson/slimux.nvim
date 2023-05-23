@@ -8,6 +8,12 @@ function M.setup(config)
 	M.__target_pane = config.target_pane
 end
 
+function M.get_tmux_socket()
+	local tmux = vim.env.TMUX ~= nil and vim.env.TMUX or ''
+	local socket = vim.split(tmux, ",")[1]
+	return socket
+end
+
 function M.configure_target_socket(name)
 	M.__target_socket = name
 end
