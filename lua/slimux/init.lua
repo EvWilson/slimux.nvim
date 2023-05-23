@@ -51,7 +51,6 @@ end
 
 function M.__send(text)
 	local escaped = string.gsub(text, ';\n', '\\;\n')
-	vim.print(string.sub(escaped, -1))
 	if string.sub(escaped, -1) == ';' then
 		escaped = string.sub(escaped, 1, -2) .. '\\;'
 	end
