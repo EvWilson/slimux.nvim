@@ -59,18 +59,24 @@ function M.__capture_paragraph_text()
 	return paragraph_text
 end
 
-function M.__send(text)
+function M.__escape_trailing_semicolons(text)
 	local escaped = string.gsub(text, ';\n', '\\;\n')
 	if string.sub(escaped, -1) == ';' then
 		escaped = string.sub(escaped, 1, -2) .. '\\;'
 	end
+	return escaped
+end
+
+function M.__send(text)
+	text = M.__escape_trailing_semicolons(text)
 	local flag
 	if string.sub(M.__target_socket, 1, 1) == '/' then
 		flag = 'S'
 	else
 		flag = 'L'
 	end
-	local cmd = string.format('tmux -%s %s send-keys -t %s "%s" Enter', flag, M.__target_socket, M.__target_pane, escaped)
+	local cmd = string.format('tmux -%s %s send-keys -t %s -- "%s" Enter', flag, M.__target_socket, M.__target_pane, text)
+	vim.print('cmd:', cmd)
 	vim.fn.systemlist(cmd)
 end
 
