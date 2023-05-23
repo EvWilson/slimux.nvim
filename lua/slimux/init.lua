@@ -39,7 +39,7 @@ function M.__capture_paragraph_text()
 	local current_buffer = vim.api.nvim_get_current_buf()
 	local cursor_line = vim.api.nvim_win_get_cursor(0)[1]
 	local start_line, end_line = cursor_line, cursor_line
-	while start_line > 1 do
+	while start_line > 0 do
 		local line = vim.api.nvim_buf_get_lines(current_buffer, start_line - 1, start_line, false)[1]
 		if line == "" then
 			break
