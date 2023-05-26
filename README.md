@@ -20,3 +20,4 @@ The target pane that text is sent to follows the standard `send-keys` format, so
 ```
 :lua require('slimux').configure_target_socket('0.1')
 ```
+Also, a reminder that pane numbers can be shown via `prefix + q`, which in a standard install will be `C-a + q`.
