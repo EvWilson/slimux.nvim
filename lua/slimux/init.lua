@@ -18,6 +18,10 @@ function M.get_tmux_window()
 	return vim.fn.systemlist("tmux display-message -p '#I'")[1]
 end
 
+function M.print_config()
+	vim.print(string.format('socket: %s, pane: %s', M.__target_socket, M.__target_pane))
+end
+
 function M.configure_target_socket(name)
 	M.__target_socket = name
 end
