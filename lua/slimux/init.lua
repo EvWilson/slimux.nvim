@@ -70,7 +70,6 @@ function M.__escape(text)
 	end
 	escaped = string.gsub(escaped, '"', '\\"')
 	escaped = string.gsub(escaped, '"/n', '\\"\n')
-	escaped = "hello" .. escaped
 	return escaped
 end
 
