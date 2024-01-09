@@ -69,7 +69,6 @@ function M.__escape(text)
 		escaped = string.sub(escaped, 1, -2) .. "\\;"
 	end
 	escaped = string.gsub(escaped, '"', '\\"')
-	escaped = string.gsub(escaped, '"/n', '\\"\n')
 	return escaped
 end
 
