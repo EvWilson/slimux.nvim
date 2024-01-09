@@ -1,7 +1,7 @@
 local M = {}
 
-M.__target_socket = ''
-M.__target_pane = ''
+M.__target_socket = ""
+M.__target_pane = ""
 
 function M.setup(config)
 	M.__target_socket = config.target_socket
@@ -9,7 +9,7 @@ function M.setup(config)
 end
 
 function M.get_tmux_socket()
-	local tmux = vim.env.TMUX ~= nil and vim.env.TMUX or ''
+	local tmux = vim.env.TMUX ~= nil and vim.env.TMUX or ""
 	local socket = vim.split(tmux, ",")[1]
 	return socket
 end
@@ -19,7 +19,7 @@ function M.get_tmux_window()
 end
 
 function M.print_config()
-	vim.print(string.format('socket: %s, pane: %s', M.__target_socket, M.__target_pane))
+	vim.print(string.format("socket: %s, pane: %s", M.__target_socket, M.__target_pane))
 end
 
 function M.configure_target_socket(name)
@@ -32,10 +32,10 @@ end
 
 function M.__capture_highlighted_text()
 	local current_buffer = vim.api.nvim_get_current_buf()
-	local start_line, _ = unpack(vim.api.nvim_buf_get_mark(current_buffer, '<'))
-	local end_line, _ = unpack(vim.api.nvim_buf_get_mark(current_buffer, '>'))
+	local start_line, _ = unpack(vim.api.nvim_buf_get_mark(current_buffer, "<"))
+	local end_line, _ = unpack(vim.api.nvim_buf_get_mark(current_buffer, ">"))
 	local highlighted_text = vim.api.nvim_buf_get_lines(current_buffer, start_line - 1, end_line, false)
-	highlighted_text = table.concat(highlighted_text, '\n')
+	highlighted_text = table.concat(highlighted_text, "\n")
 	return highlighted_text
 end
 
@@ -59,27 +59,29 @@ function M.__capture_paragraph_text()
 		end_line = end_line + 1
 	end
 	local paragraph_lines = vim.api.nvim_buf_get_lines(current_buffer, start_line, end_line, false)
-	local paragraph_text = table.concat(paragraph_lines, '\n')
+	local paragraph_text = table.concat(paragraph_lines, "\n")
 	return paragraph_text
 end
 
-function M.__escape_trailing_semicolons(text)
-	local escaped = string.gsub(text, ';\n', '\\;\n')
-	if string.sub(escaped, -1) == ';' then
-		escaped = string.sub(escaped, 1, -2) .. '\\;'
+function M.__escape(text)
+	local escaped = string.gsub(text, ";\n", "\\;\n")
+	if string.sub(escaped, -1) == ";" then
+		escaped = string.sub(escaped, 1, -2) .. "\\;"
 	end
+	escaped = string.gsub(escaped, '"', '\\"')
 	return escaped
 end
 
 function M.__send(text)
-	text = M.__escape_trailing_semicolons(text)
+	text = M.__escape(text)
 	local flag
-	if string.sub(M.__target_socket, 1, 1) == '/' then
-		flag = 'S'
+	if string.sub(M.__target_socket, 1, 1) == "/" then
+		flag = "S"
 	else
-		flag = 'L'
+		flag = "L"
 	end
-	local cmd = string.format('tmux -%s %s send-keys -t %s -- "%s" Enter', flag, M.__target_socket, M.__target_pane, text)
+	local cmd =
+		string.format('tmux -%s %s send-keys -t %s -- "%s" Enter', flag, M.__target_socket, M.__target_pane, text)
 	vim.fn.systemlist(cmd)
 end
 
