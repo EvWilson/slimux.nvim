@@ -2,8 +2,6 @@
 
 Send content from the current Neovim buffer to a configurable tmux pane.
 
-[![asciicast](https://asciinema.org/a/MqKy1l509Y5fLuBtTpXaRkQAI.png)](https://asciinema.org/a/MqKy1l509Y5fLuBtTpXaRkQAI)
-
 ## Example setup and (installation)
 Via [lazy](https://github.com/folke/lazy.nvim):
 ```lua
@@ -29,6 +27,12 @@ The target pane that text is sent to follows the standard `send-keys` format, so
 ```
 :lua require('slimux').configure_target_pane('0.1')
 ```
+
+Additionally, some effort is taken to automatically smart-escape input to send it to its destination intact. The array of escaped strings can be overridden in the above setup function, with the default setting being the below:
+```
+escaped_strings = { '\\', ';', '"', '\'' }
+```
+
 For more detail on specifying tmux command targets, check out the documentation included with the project: https://github.com/tmux/tmux/wiki/Advanced-Use#command-targets
 
 Also, a reminder that pane numbers can be shown via `prefix + q`, which in a standard install will be `C-b + q`.
