@@ -28,7 +28,7 @@ The target pane that text is sent to follows the standard `send-keys` format, so
 :lua require('slimux').configure_target_pane('0.1')
 ```
 
-Additionally, some effort is taken to automatically smart-escape input to send it to its destination intact. The array of escaped strings can be overridden in the above setup function, with the default setting being the below:
+Additionally, some effort is taken to automatically escape input to send it to its destination intact. The array of escaped strings can be overridden in the above setup function, with the default setting being the below:
 ```
 escaped_strings = { '\\', ';', '"', '\'' }
 ```

@@ -2,7 +2,7 @@ local M = {}
 
 M.__target_socket = ""
 M.__target_pane = ""
-M.__escaped_strings = { '\\', ';', '"', '\'' }
+M.__escaped_strings = { '\\', ';', '"', '$', '\'' }
 
 function M.setup(config)
 	M.__target_socket = config.target_socket
@@ -72,11 +72,14 @@ function M.__capture_paragraph_text()
 end
 
 function M.__escape(text)
-	local escaped = text
-	for _, char in ipairs(M.__escaped_chars) do
-		escaped = string.gsub(escaped, char, "\\" .. char)
+	local escapedString = text
+	for _, substring in ipairs(M.__escaped_strings) do
+		local escapedSubstring = string.gsub(substring, "[%(%)%.%%%+%-%*%?%[%]%^%$]", "%%%1")
+		escapedString = string.gsub(escapedString, escapedSubstring, function(match)
+			return "\\" .. match
+		end)
 	end
-	return escaped
+	return escapedString
 end
 
 function M.__send(text)
