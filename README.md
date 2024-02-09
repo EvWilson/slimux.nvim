@@ -2,7 +2,7 @@
 
 Send content from the current Neovim buffer to a configurable tmux pane.
 
-## Example setup and (installation)
+## Example setup (and installation)
 Via [lazy](https://github.com/folke/lazy.nvim):
 ```lua
 require("lazy").setup({
@@ -30,9 +30,24 @@ The target pane that text is sent to follows the standard `send-keys` format, so
 
 Additionally, some effort is taken to automatically escape input to send it to its destination intact. The array of escaped strings can be overridden in the above setup function, with the default setting being the below:
 ```
-escaped_strings = { '\\', ';', '"', '\'' }
+escaped_strings = { '\\', ';', '"', '$', '\'' }
 ```
 
 For more detail on specifying tmux command targets, check out the documentation included with the project: https://github.com/tmux/tmux/wiki/Advanced-Use#command-targets
 
 Also, a reminder that pane numbers can be shown via `prefix + q`, which in a standard install will be `C-b + q`.
+
+Additional available functions:
+```
+send_highlighted_text_with_delay_ms(delay)
+  Parameters:
+    - delay: a delay between each printed character, specified in milliseconds
+  Description:
+    This function will send the highlighted text to the configured target, with the given delay between each character sent. This can be useful for e.g. instructional applications, or a LMGTFY presentational panache.
+  Note:
+    This function does block, so the editor UI will be frozen until the command completes. Have a care with long strings and high delays.
+
+send_paragraph_text_with_delay_ms(delay)
+  Description:
+    Same as the above, but for captured paragraph text.
+```
