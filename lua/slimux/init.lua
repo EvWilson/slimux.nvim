@@ -38,7 +38,7 @@ function M.configure_escape_strings(strings)
 	M.__escaped_strings = strings
 end
 
-function M.__capture_highlighted_text()
+local function capture_highlighted_text()
 	local current_buffer = vim.api.nvim_get_current_buf()
 	local start_line, _ = unpack(vim.api.nvim_buf_get_mark(current_buffer, "<"))
 	local end_line, _ = unpack(vim.api.nvim_buf_get_mark(current_buffer, ">"))
@@ -47,7 +47,7 @@ function M.__capture_highlighted_text()
 	return highlighted_text
 end
 
-function M.__capture_paragraph_text()
+local function capture_paragraph_text()
 	local current_buffer = vim.api.nvim_get_current_buf()
 	local cursor_line = vim.api.nvim_win_get_cursor(0)[1]
 	local start_line, end_line = cursor_line, cursor_line
@@ -71,7 +71,7 @@ function M.__capture_paragraph_text()
 	return paragraph_text
 end
 
-function M.__escape(text)
+local function escape(text)
 	local escapedString = text
 	for _, substring in ipairs(M.__escaped_strings) do
 		local escapedSubstring = string.gsub(substring, "[%(%)%.%%%+%-%*%?%[%]%^%$]", "%%%1")
@@ -82,8 +82,41 @@ function M.__escape(text)
 	return escapedString
 end
 
-function M.__send(text)
-	text = M.__escape(text)
+local function sleep(milliseconds)
+	vim.wait(milliseconds, function()
+		return false
+	end)
+end
+
+local function string_to_char_array(str)
+	local char_array = {}
+	for i = 1, #str do
+		char_array[i] = str:sub(i, i)
+	end
+	return char_array
+end
+
+local function send_delayed(text, delay)
+	text = escape(text)
+	local flag
+	if string.sub(M.__target_socket, 1, 1) == "/" then
+		flag = "S"
+	else
+		flag = "L"
+	end
+	local arr = string_to_char_array(text)
+	for _, char in ipairs(arr) do
+		sleep(delay)
+		local cmd = string.format('tmux -%s %s send-keys -t %s -- "%s"', flag, M.__target_socket, M.__target_pane, char)
+		vim.fn.systemlist(cmd)
+	end
+	sleep(delay)
+	local cmd = string.format('tmux -%s %s send-keys -t %s -- Enter', flag, M.__target_socket, M.__target_pane)
+	vim.fn.systemlist(cmd)
+end
+
+local function send(text)
+	text = escape(text)
 	local flag
 	if string.sub(M.__target_socket, 1, 1) == "/" then
 		flag = "S"
@@ -96,13 +129,23 @@ function M.__send(text)
 end
 
 function M.send_highlighted_text()
-	local hl = M.__capture_highlighted_text()
-	M.__send(hl)
+	local hl = capture_highlighted_text()
+	send(hl)
 end
 
 function M.send_paragraph_text()
-	local para = M.__capture_paragraph_text()
-	M.__send(para)
+	local para = capture_paragraph_text()
+	send(para)
+end
+
+function M.send_highlighted_text_with_delay_ms(delay)
+	local hl = capture_highlighted_text()
+	send_delayed(hl, delay)
+end
+
+function M.send_paragraph_text_with_delay_ms(delay)
+	local para = capture_paragraph_text()
+	send_delayed(para, delay)
 end
 
 return M
