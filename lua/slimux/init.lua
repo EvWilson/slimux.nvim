@@ -40,11 +40,31 @@ end
 
 local function capture_highlighted_text()
 	local current_buffer = vim.api.nvim_get_current_buf()
-	local start_line, _ = unpack(vim.api.nvim_buf_get_mark(current_buffer, "<"))
-	local end_line, _ = unpack(vim.api.nvim_buf_get_mark(current_buffer, ">"))
-	local highlighted_text = vim.api.nvim_buf_get_lines(current_buffer, start_line - 1, end_line, false)
-	highlighted_text = table.concat(highlighted_text, "\n")
-	return highlighted_text
+	local start_line, start_col = unpack(vim.api.nvim_buf_get_mark(current_buffer, "<"))
+	local end_line, end_col = unpack(vim.api.nvim_buf_get_mark(current_buffer, ">"))
+
+	if start_line == end_line and start_col == end_col then
+		return nil
+	end
+	if start_line > end_line or (start_line == end_line and start_col > end_col) then
+		start_line, end_line = end_line, start_line
+		start_col, end_col = end_col, start_col
+	end
+
+	local lines = {}
+	for line = start_line, end_line do
+		local line_text = vim.api.nvim_buf_get_lines(0, line - 1, line, false)[1]
+		if line == start_line and line == end_line then
+			line_text = string.sub(line_text, start_col + 1, end_col + 1)
+		elseif line == start_line then
+			line_text = string.sub(line_text, start_col + 1)
+		elseif line == end_line then
+			line_text = string.sub(line_text, 1, end_col + 1)
+		end
+		table.insert(lines, line_text)
+	end
+
+	return table.concat(lines, "\n")
 end
 
 local function capture_paragraph_text()
