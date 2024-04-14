@@ -116,7 +116,7 @@ local function string_to_char_array(str)
 	return char_array
 end
 
-local function send_delayed(text, delay)
+function M.send_delayed(text, delay)
 	text = escape(text)
 	local flag
 	if string.sub(M.__target_socket, 1, 1) == "/" then
@@ -135,7 +135,7 @@ local function send_delayed(text, delay)
 	vim.fn.systemlist(cmd)
 end
 
-local function send(text)
+function M.send(text)
 	text = escape(text)
 	local flag
 	if string.sub(M.__target_socket, 1, 1) == "/" then
@@ -150,22 +150,22 @@ end
 
 function M.send_highlighted_text()
 	local hl = capture_highlighted_text()
-	send(hl)
+	M.send(hl)
 end
 
 function M.send_paragraph_text()
 	local para = capture_paragraph_text()
-	send(para)
+	M.send(para)
 end
 
 function M.send_highlighted_text_with_delay_ms(delay)
 	local hl = capture_highlighted_text()
-	send_delayed(hl, delay)
+	M.send_delayed(hl, delay)
 end
 
 function M.send_paragraph_text_with_delay_ms(delay)
 	local para = capture_paragraph_text()
-	send_delayed(para, delay)
+	M.send_delayed(para, delay)
 end
 
 return M
