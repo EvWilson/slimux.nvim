@@ -14,9 +14,9 @@ require("lazy").setup({
         target_socket = slimux.get_tmux_socket(),
         target_pane = string.format('%s.2', slimux.get_tmux_window()),
       })
-      vim.keymap.set('v', '<leader>r', ':lua require("slimux").send_highlighted_text()<CR>',
+      vim.keymap.set('v', '<leader>r', slimux.send_highlighted_text,
         { desc = 'Send currently highlighted text to configured tmux pane' })
-      vim.keymap.set('n', '<leader>r', ':lua require("slimux").send_paragraph_text()<CR>',
+      vim.keymap.set('n', '<leader>r', slimux.send_paragraph_text,
         { desc = 'Send paragraph under cursor to configured tmux pane' })
     end
   }
@@ -39,13 +39,37 @@ Also, a reminder that pane numbers can be shown via `prefix + q`, which in a sta
 
 Additional available functions:
 ```
+send(text)
+  Parameters:
+    - text: a string of keystrokes that will be sent to the configured panel
+  Description:
+    This function will send keystrokes to the target pane.
+  Note:
+    The word 'keystrokes' is used to signify that tmux is not just sending
+    regular text, but is performing keystrokes, enabling you to send control
+    characters as well (e.g. Ctrl-C in the form of '^C').
+
+send_delayed(text, delay)
+  Parameters:
+    - text: a string of keystrokes that will be sent to the configured panel
+    - delay: a delay between each printed character, specified in milliseconds
+  Description:
+    This function will have the specified delay between each keystroke sent to
+    the target pane.
+  Note:
+    Same as the above 'send' function. THIS FUNCTION IS NOT ASYNCHRONOUS.
+    Neovim will be frozen until the command completes. Be careful with long
+    strings and high delays.
+
 send_highlighted_text_with_delay_ms(delay)
   Parameters:
     - delay: a delay between each printed character, specified in milliseconds
   Description:
-    This function will send the highlighted text to the configured target, with the given delay between each character sent. This can be useful for e.g. instructional applications, or a LMGTFY presentational panache.
+    This function will send the highlighted text to the configured target, with
+    the given delay between each character sent. This can be useful for e.g.
+    instructional applications, or a LMGTFY presentational panache.
   Note:
-    This function does block, so the editor UI will be frozen until the command completes. Have a care with long strings and high delays.
+    Same as the above 'send_delayed' function.
 
 send_paragraph_text_with_delay_ms(delay)
   Description:
