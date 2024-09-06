@@ -75,3 +75,10 @@ send_paragraph_text_with_delay_ms(delay)
   Description:
     Same as the above, but for captured paragraph text.
 ```
+
+## Compatibility/Support
+
+This project will attempt to support the latest Neovim stable release. Issues or incompatibilities only replicable
+in nightly releases, or sufficiently older versions (>2 major versions back) will not be supported.
+
+Thank you for your understanding!
