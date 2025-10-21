@@ -2,7 +2,7 @@ local M = {}
 
 M.__target_socket = ""
 M.__target_pane = ""
-M.__escaped_strings = { '\\', ';', '"', '$', '\'' }
+M.__escaped_strings = { "\\", ";", '"', "$", "'" }
 
 function M.setup(config)
 	M.__target_socket = config.target_socket
@@ -43,7 +43,7 @@ local function capture_highlighted_text()
 	local start_line, start_col = unpack(vim.api.nvim_buf_get_mark(current_buffer, "<"))
 	local end_line, end_col = unpack(vim.api.nvim_buf_get_mark(current_buffer, ">"))
 
-	if start_line == end_line and start_col == end_col then
+	if start_line == 0 or end_line == 0 then
 		return nil
 	end
 	if start_line > end_line or (start_line == end_line and start_col > end_col) then
@@ -131,7 +131,7 @@ function M.send_delayed(text, delay)
 		vim.fn.systemlist(cmd)
 	end
 	sleep(delay)
-	local cmd = string.format('tmux -%s %s send-keys -t %s -- Enter', flag, M.__target_socket, M.__target_pane)
+	local cmd = string.format("tmux -%s %s send-keys -t %s -- Enter", flag, M.__target_socket, M.__target_pane)
 	vim.fn.systemlist(cmd)
 end
 
@@ -143,8 +143,8 @@ function M.send(text)
 	else
 		flag = "L"
 	end
-	local cmd = string.format('tmux -%s %s send-keys -t %s -- "%s" Enter', flag, M.__target_socket, M.__target_pane,
-		text)
+	local cmd =
+		string.format('tmux -%s %s send-keys -t %s -- "%s" Enter', flag, M.__target_socket, M.__target_pane, text)
 	vim.fn.systemlist(cmd)
 end
 
